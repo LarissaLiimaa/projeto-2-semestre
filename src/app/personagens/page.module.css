@@ -1,0 +1,55 @@
+.pagina {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 72px 24px 96px;
+}
+
+.topo {
+  max-width: 680px;
+  margin-bottom: 56px;
+}
+
+.topo h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  color: var(--sun);
+  margin-bottom: 16px;
+}
+
+.topo p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 28px;
+}
+
+.personagem {
+  padding: 28px 26px 32px;
+  background: var(--night-soft);
+  border-top: 4px solid var(--cor);
+}
+
+.personagem h2 {
+  font-size: 1.9rem;
+  color: var(--cor);
+  margin-bottom: 12px;
+}
+
+.personagem p {
+  color: var(--sand);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .pagina {
+    padding: 48px 24px 64px;
+  }
+
+  .topo {
+    margin-bottom: 36px;
+  }
+}
