@@ -1,0 +1,93 @@
+.pagina {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 72px 24px 96px;
+}
+
+.topo {
+  max-width: 720px;
+  margin-bottom: 72px;
+}
+
+.topo h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  color: var(--sun);
+  margin-bottom: 16px;
+}
+
+.topo p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+.secao {
+  margin-bottom: 72px;
+}
+
+.secao h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  color: var(--sand);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 204, 0, 0.35);
+}
+
+.autores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.autor h3 {
+  font-size: 1.35rem;
+  color: var(--sun);
+  margin-bottom: 10px;
+}
+
+.autor p {
+  line-height: 1.75;
+}
+
+.intro {
+  margin-bottom: 24px;
+  color: var(--sand-dim);
+}
+
+.faixas {
+  list-style: none;
+  display: grid;
+  gap: 16px;
+}
+
+.faixa {
+  padding: 20px 24px;
+  background: var(--night-soft);
+  border-left: 5px solid var(--ember);
+}
+
+.faixa h3 {
+  font-size: 1.25rem;
+  color: var(--ember);
+  margin-bottom: 6px;
+}
+
+.faixa p {
+  color: var(--sand);
+}
+
+@media (max-width: 768px) {
+  .pagina {
+    padding: 48px 24px 64px;
+  }
+
+  .topo,
+  .secao {
+    margin-bottom: 48px;
+  }
+
+  .autores {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

@@ -1,0 +1,52 @@
+.footer {
+  background: var(--footer);
+  border-top: 3px solid var(--red);
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.marca {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sun);
+}
+
+.links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  margin-bottom: 8px;
+}
+
+.links a {
+  color: var(--sand);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.links a:hover {
+  color: var(--sun);
+  border-bottom-color: var(--sun);
+}
+
+.texto {
+  font-size: 0.9rem;
+  color: var(--sand-dim);
+}
+
+.texto span {
+  color: var(--sun);
+  font-weight: 600;
+}
