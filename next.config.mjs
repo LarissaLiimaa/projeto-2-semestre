@@ -1,13 +1,6 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'https://ifro.edu.br*',
-      },
-    ];
-  },
-};
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+const nextConfig = {};
 
 export default nextConfig;

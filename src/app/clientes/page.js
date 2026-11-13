@@ -9,7 +9,7 @@ export default function Clientes() {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await fetch('https://ifro.edu.br');
+        const response = await fetch('/api/clientes');
         if (!response.ok) {
           throw new Error(`Erro ao buscar Clientes: ${response.statusText}`);
         }
