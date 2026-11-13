@@ -4,24 +4,29 @@ import { useEffect, useState } from 'react';
 import styles from './page.module.css';
 
 export default function Clientes() {
-  const [clientes, setClientes] = useState([]);
-  const [carregando, setCarregando] = useState(true);
+  const [clientes, setClientes] = useState(null);
 
   useEffect(() => {
-    fetch('https://ifro.edu.br')
-      .then((res) => res.json())
-      .then((dados) => {
-        setClientes(Array.isArray(dados) ? dados : dados.data || []);
-      })
-      .catch((err) => console.error('Erro ao buscar clientes:', err))
-      .finally(() => setCarregando(false));
+    const fetchClientes = async () => {
+      try {
+        const response = await fetch('https://ifro.edu.br');
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar Clientes: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setClientes(data);
+      } catch (e) {
+        console.error(e.message);
+      }
+    };
+    fetchClientes();
   }, []);
 
   return (
     <div>
       <h1 className={styles.titulo}>Clientes Cadastrados</h1>
 
-      {carregando ? (
+      {clientes === null ? (
         <p>Carregando clientes...</p>
       ) : (
         <div className={styles.grid}>

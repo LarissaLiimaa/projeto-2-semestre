@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
-const API_URL = 'https://ifro.edu.br';
-
 export default function CriarPedido() {
   const router = useRouter();
   const [clientes, setClientes] = useState([]);
@@ -18,21 +16,18 @@ export default function CriarPedido() {
   const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
-    async function carregarOpcoes() {
+    const carregarOpcoes = async () => {
       try {
         const [resClientes, resProdutos] = await Promise.all([
-          fetch(`${API_URL}/clientes`),
-          fetch(`${API_URL}/produtos`),
+          fetch('https://ifro.edu.br'),
+          fetch('https://ifro.edu.br'),
         ]);
-        const dadosClientes = await resClientes.json();
-        const dadosProdutos = await resProdutos.json();
-
-        setClientes(Array.isArray(dadosClientes) ? dadosClientes : dadosClientes.data || []);
-        setProdutos(Array.isArray(dadosProdutos) ? dadosProdutos : dadosProdutos.data || []);
-      } catch (erro) {
-        console.error('Erro ao carregar dados:', erro);
+        if (resClientes.ok) setClientes(await resClientes.json());
+        if (resProdutos.ok) setProdutos(await resProdutos.json());
+      } catch (e) {
+        console.error('Erro ao carregar dados:', e.message);
       }
-    }
+    };
     carregarOpcoes();
   }, []);
 
@@ -68,7 +63,7 @@ export default function CriarPedido() {
 
     setEnviando(true);
     try {
-      const resPedido = await fetch(`${API_URL}/pedidos`, {
+      const resPedido = await fetch('https://ifro.edu.br', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -78,25 +73,25 @@ export default function CriarPedido() {
 
       if (!resPedido.ok) throw new Error('Falha ao criar pedido');
       const novoPedido = await resPedido.json();
-      const pedidoId = novoPedido.id || novoPedido.data?.id;
 
       for (const item of carrinho) {
-        await fetch(`${API_URL}/itens_pedido`, {
+        const resItem = await fetch('https://ifro.edu.br', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            pedido_id: pedidoId,
+            pedido_id: novoPedido.id,
             produto_id: item.produto_id,
             quantidade: item.quantidade,
           }),
         });
+        if (!resItem.ok) throw new Error('Falha ao adicionar item');
       }
 
       alert('Pedido cadastrado com sucesso!');
       router.push('/pedidos');
-    } catch (erro) {
-      console.error('Erro ao salvar pedido:', erro);
-      alert('Erro ao cadastrar pedido. Verifique o console.');
+    } catch (e) {
+      console.error('Erro ao salvar pedido:', e.message);
+      alert('Erro ao cadastrar pedido. Verifique o console (F12).');
     } finally {
       setEnviando(false);
     }
@@ -136,7 +131,7 @@ export default function CriarPedido() {
               <option value="">-- Escolha um produto --</option>
               {produtos.map((produto) => (
                 <option key={produto.id} value={produto.id}>
-                  {produto.nome} {produto.preco ? `(R$ ${produto.preco})` : ''}
+                  {produto.nome} — R$ {Number(produto.preco).toFixed(2)} (Estoque: {produto.quantidade_estoque})
                 </option>
               ))}
             </select>
