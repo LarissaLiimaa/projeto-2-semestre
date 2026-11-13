@@ -1,0 +1,105 @@
+.titulo {
+  font-size: 1.6rem;
+  color: #1e293b;
+  margin-bottom: 16px;
+}
+
+.formulario {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.grupo {
+  margin-bottom: 14px;
+}
+
+.grupo label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.grupo select,
+.grupo input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.linhaProduto {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+.divisor {
+  margin: 18px 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+.subtitulo {
+  font-size: 1.15rem;
+  color: #334155;
+  margin-bottom: 12px;
+}
+
+.btnAdicionar {
+  background-color: #475569;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btnAdicionar:hover {
+  background-color: #334155;
+}
+
+.carrinhoBox {
+  margin-top: 20px;
+}
+
+.listaCarrinho {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.itemCarrinho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.btnRemover {
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btnRemover:hover {
+  background-color: #b91c1c;
+}
+
+.acoesFinais {
+  margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .linhaProduto {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

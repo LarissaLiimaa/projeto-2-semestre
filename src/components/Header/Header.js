@@ -1,64 +1,49 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import styles from "./Header.module.css";
-
-const links = [
-  { href: "/", label: "Início" },
-  { href: "/personagens", label: "Personagens" },
-  { href: "/trilhaSonora", label: "Trilha Sonora" },
-];
+import { useState } from 'react';
+import Link from 'next/link';
+import styles from './Header.module.css';
 
 export default function Header() {
-  const [aberto, setAberto] = useState(false);
-  const pathname = usePathname();
+  const [menuAberto, setMenuAberto] = useState(false);
+
+  const fecharMenu = () => setMenuAberto(false);
 
   return (
     <header className={styles.header}>
-      <div className={styles.container}>
-        <Link
-          href="/"
-          className={styles.logo}
-          onClick={() => setAberto(false)}
-        >
-          O Rei Leão
+      <div className={styles.navContainer}>
+        <Link href="/" className={styles.logo} onClick={fecharMenu}>
+          Estoque Store
         </Link>
 
         <button
-          type="button"
-          className={styles.toggle}
-          aria-label={aberto ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={aberto}
-          aria-controls="menu-principal"
-          onClick={() => setAberto(!aberto)}
+          className={styles.menuBtn}
+          onClick={() => setMenuAberto(!menuAberto)}
+          aria-label="Abrir menu"
         >
-          <span className={`${styles.bar} ${aberto ? styles.barAberta : ""}`} />
+          {menuAberto ? '✕ Fechar' : '☰ Menu'}
         </button>
 
-        <nav
-          id="menu-principal"
-          aria-label="Principal"
-          className={`${styles.nav} ${aberto ? styles.navAberto : ""}`}
-        >
-          <ul>
-            {links.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`${styles.link} ${
-                    pathname === item.href ? styles.ativo : ""
-                  }`}
-                  aria-current={pathname === item.href ? "page" : undefined}
-                  onClick={() => setAberto(false)}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <ul className={`${styles.navLinks} ${menuAberto ? styles.navLinksAberto : ''}`}>
+          <li>
+            <Link href="/" onClick={fecharMenu}>Home</Link>
+          </li>
+          <li>
+            <Link href="/categorias" onClick={fecharMenu}>Categorias</Link>
+          </li>
+          <li>
+            <Link href="/produtos" onClick={fecharMenu}>Produtos</Link>
+          </li>
+          <li>
+            <Link href="/clientes" onClick={fecharMenu}>Clientes</Link>
+          </li>
+          <li>
+            <Link href="/pedidos" onClick={fecharMenu}>Listar Pedidos</Link>
+          </li>
+          <li>
+            <Link href="/pedidos/novo" onClick={fecharMenu}>Criar Pedido</Link>
+          </li>
+        </ul>
       </div>
     </header>
   );
