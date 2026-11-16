@@ -1,5 +1,8 @@
 import styles from "./page.module.css";
 
+'use client';
+import { useState } from "react";
+
 export const metadata = {
   title: "Trilha Sonora | O Rei Leão",
 };
