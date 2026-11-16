@@ -1,132 +1,68 @@
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--red);
-  border-bottom: 4px solid var(--ember);
+  background-color: #1e293b;
+  color: #fff;
+  padding: 14px 20px;
 }
 
-.container {
-  max-width: var(--max-width);
-  height: 68px;
+.navContainer {
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 0 24px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .logo {
-  font-family: var(--font-display);
-  font-size: 1.45rem;
-  font-weight: 700;
-  color: var(--sun);
-  letter-spacing: 0.02em;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
 }
 
-.nav ul {
-  list-style: none;
-  display: flex;
-  gap: 6px;
-}
-
-.link {
-  display: block;
-  padding: 9px 16px;
-  border-radius: 6px;
-  color: var(--sand);
-  font-weight: 600;
-  transition: background 0.2s, color 0.2s;
-}
-
-.link:hover,
-.ativo {
-  background: var(--night);
-  color: var(--sun);
-}
-
-/* Botão hambúrguer: escondido no desktop */
-.toggle {
+.menuBtn {
   display: none;
-  width: 44px;
-  height: 44px;
-  align-items: center;
-  justify-content: center;
   background: none;
-  border: 1px solid rgba(255, 204, 0, 0.6);
-  border-radius: 6px;
+  border: 1px solid #94a3b8;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 1rem;
   cursor: pointer;
 }
 
-.bar,
-.bar::before,
-.bar::after {
-  display: block;
-  width: 22px;
-  height: 2px;
-  background: var(--sun);
-  transition: transform 0.2s, background 0.2s;
+.navLinks {
+  display: flex;
+  gap: 18px;
+  list-style: none;
 }
 
-.bar {
-  position: relative;
+.navLinks a {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 0.95rem;
 }
 
-.bar::before,
-.bar::after {
-  content: "";
-  position: absolute;
-  left: 0;
-}
-
-.bar::before {
-  top: -7px;
-}
-
-.bar::after {
-  top: 7px;
-}
-
-/* Estado aberto: vira um X */
-.barAberta {
-  background: transparent;
-}
-
-.barAberta::before {
-  transform: translateY(7px) rotate(45deg);
-}
-
-.barAberta::after {
-  transform: translateY(-7px) rotate(-45deg);
+.navLinks a:hover {
+  color: #38bdf8;
 }
 
 @media (max-width: 768px) {
-  .toggle {
-    display: flex;
-  }
-
-  .nav {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--night-soft);
-    border-bottom: 4px solid var(--ember);
-  }
-
-  .navAberto {
+  .menuBtn {
     display: block;
   }
 
-  .nav ul {
+  .navLinks {
+    display: none;
+    width: 100%;
     flex-direction: column;
-    gap: 0;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #334155;
   }
 
-  .link {
-    padding: 16px 24px;
-    border-radius: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  .navLinksAberto {
+    display: flex;
   }
 }

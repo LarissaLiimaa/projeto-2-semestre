@@ -1,0 +1,36 @@
+.titulo {
+  font-size: 1.6rem;
+  color: #1e293b;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.card h2 {
+  font-size: 1.15rem;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.detalhe {
+  font-size: 0.95rem;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
