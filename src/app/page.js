@@ -1,44 +1,40 @@
-import Link from 'next/link';
-import styles from './page.module.css';
+import Link from "next/link";
+import styles from "./page.module.css";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div>
-      <div className={styles.banner}>
-        <h1>Sistema de Controle de Estoque</h1>
-        <p>Projeto desenvolvido para a disciplina de Front-End II (4º Bimestre).</p>
+      <section className={styles.cartaoPrincipal}>
+        <span className={styles.etiqueta}>4º Bimestre - Front-End</span>
+        <h1 className={styles.titulo}>Lima - Controle de Estoque</h1>
+        <p className={styles.descricao}>
+          Aplicação web para consulta de produtos, categorias, clientes e registro de pedidos.
+        </p>
 
-        <h2 className={styles.Titulo}>Integrante</h2>
-        <ul className={styles.integrante}>
-          <li>Larissa Lima</li>
-        </ul>
-      </div>
-
-      <div className={styles.gridAtalhos}>
-        <div className={styles.cardAtalho}>
-          <div>
-            <h2>Pedidos</h2>
-            <p>Consulte os pedidos realizados no sistema.</p>
-          </div>
-          <Link href="/pedidos" className="btn">Ver Pedidos</Link>
+        <div className={styles.caixaDupla}>
+          <h3>Desenvolvido por</h3>
+          <ul className={styles.listaNomes}>
+            <li>Larissa da Silva Lima</li>
+          </ul>
         </div>
+      </section>
 
-        <div className={styles.cardAtalho}>
-          <div>
-            <h2>Novo Pedido</h2>
-            <p>Cadastre um pedido selecionando cliente e produtos.</p>
-          </div>
-          <Link href="/pedidos/novo" className="btn">Criar Pedido</Link>
-        </div>
+      <section className={styles.gradeAtalhos}>
+        <Link href="/pedidos" className={styles.atalho}>
+          <h3>Listar Pedidos</h3>
+          <p>Consulte os pedidos realizados e os itens vinculados a cada um.</p>
+        </Link>
 
-        <div className={styles.cardAtalho}>
-          <div>
-            <h2>Produtos</h2>
-            <p>Confira os produtos e quantidades em estoque.</p>
-          </div>
-          <Link href="/produtos" className="btn">Ver Produtos</Link>
-        </div>
-      </div>
+        <Link href="/pedidos/novo" className={styles.atalho}>
+          <h3>Criar Pedido</h3>
+          <p>Selecione um cliente e adicione produtos com suas quantidades.</p>
+        </Link>
+
+        <Link href="/produtos" className={styles.atalho}>
+          <h3>Catálogo de Produtos</h3>
+          <p>Visualize os produtos cadastrados e a quantidade em estoque.</p>
+        </Link>
+      </section>
     </div>
   );
 }

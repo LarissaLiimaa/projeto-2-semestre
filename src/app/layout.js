@@ -1,9 +1,9 @@
-import './globals.css';
-import Header from '@/components/Header/Header';
+import "./globals.css";
+import Header from "@/components/Header/Header";
 
 export const metadata = {
-  title: 'Controle de Estoque',
-  description: 'Atividade 4º Bimestre - Front-End II',
+  title: "Lima - Controle de Estoque",
+  description: "Aplicação web para controle de estoque - 4º Bimestre",
 };
 
 export default function RootLayout({ children }) {
@@ -11,7 +11,10 @@ export default function RootLayout({ children }) {
     <html lang="pt-BR">
       <body>
         <Header />
-        <main className="container">{children}</main>
+        <main className="conteudo-principal">{children}</main>
+        <footer className="rodape">
+          Lima - Controle de Estoque • Desenvolvido por Larissa da Silva Lima
+        </footer>
       </body>
     </html>
   );

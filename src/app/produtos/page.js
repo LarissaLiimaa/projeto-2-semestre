@@ -1,51 +1,40 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import styles from './page.module.css';
+import { useEffect, useState } from "react";
+import { buscarDados } from "@/services/api";
+import styles from "./page.module.css";
 
-export default function Produtos() {
-  const [prods, setProds] = useState(null);
-  const [cats, setCats] = useState(null);
-  const [busca, setBusca] = useState('');
-
-  useEffect(() => {
-    const fetchProds = async () => {
-      try {
-        const response = await fetch('https://ifro.edu.br');
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar Produtos: ${response.statusText}`);
-        }
-        const data = await response.json();
-        setProds(data);
-      } catch (e) {
-        console.error(e.message);
-      }
-    };
-    fetchProds();
-  }, []);
+export default function ProdutosPage() {
+  const [produtos, setProdutos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [busca, setBusca] = useState("");
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-    const fetchCats = async () => {
+    async function carregar() {
       try {
-        const response = await fetch('https://ifro.edu.br');
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar Categorias: ${response.statusText}`);
-        }
-        const data = await response.json();
-        setCats(data);
+        const [listaProdutos, listaCategorias] = await Promise.all([
+          buscarDados("/produtos"),
+          buscarDados("/categorias"),
+        ]);
+        setProdutos(listaProdutos);
+        setCategorias(listaCategorias);
       } catch (e) {
-        console.error(e.message);
+        setErro(e.message);
+      } finally {
+        setCarregando(false);
       }
-    };
-    fetchCats();
+    }
+    carregar();
   }, []);
 
-  const getNomeCategoria = (id_categoria) => {
-    const categoria = cats?.find((cat) => cat.id === id_categoria);
-    return categoria ? categoria.nome : 'Sem categoria';
-  };
+  function obterNomeCategoria(categoriaId) {
+    const cat = categorias.find((c) => c.id === categoriaId);
+    return cat ? cat.nome : "Sem categoria";
+  }
 
-  const produtosFiltrados = prods?.filter((p) =>
+  const produtosFiltrados = produtos.filter((p) =>
     p.nome.toLowerCase().includes(busca.toLowerCase())
   );
 
@@ -55,33 +44,40 @@ export default function Produtos() {
 
       <input
         type="text"
-        placeholder="Busque um produto pelo nome..."
-        className={styles.campoBusca}
+        placeholder="Buscar produto pelo nome..."
         value={busca}
         onChange={(e) => setBusca(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "10px",
+          marginBottom: "20px",
+          border: "1px solid #bfa8ad",
+          fontSize: "1rem",
+        }}
       />
 
-      {prods === null ? (
-        <p>Carregando lista de produtos...</p>
-      ) : (
-        <div className={styles.grid}>
-          {produtosFiltrados.map((prod) => (
-            <div key={prod.id} className={styles.card}>
-              <span className={styles.badgeCategoria}>
-                {getNomeCategoria(prod.categoria_id)}
-              </span>
-              <h2>{prod.nome}</h2>
-              {prod.descricao && <p className={styles.descricao}>{prod.descricao}</p>}
-              <p className={styles.preco}>
-                <strong>Preço:</strong> R$ {Number(prod.preco).toFixed(2)}
-              </p>
-              <span className={styles.estoque}>
-                Estoque: {prod.quantidade_estoque} un.
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+      {carregando && <p>Carregando lista de produtos...</p>}
+      {erro && <p className={styles.erro}>{erro}</p>}
+
+      <div className={styles.grade}>
+        {produtosFiltrados.map((prod) => (
+          <div key={prod.id} className={styles.card}>
+            <span className={styles.etiqueta}>
+              #{prod.id} • {obterNomeCategoria(prod.categoria_id)}
+            </span>
+            <h2>{prod.nome}</h2>
+            {prod.descricao && (
+              <p className={styles.detalhe}>{prod.descricao}</p>
+            )}
+            <p className={styles.detalhe}>
+              Preço: <strong>R$ {Number(prod.preco).toFixed(2)}</strong>
+            </p>
+            <p className={styles.detalhe}>
+              Estoque: <strong>{prod.quantidade_estoque} un.</strong>
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

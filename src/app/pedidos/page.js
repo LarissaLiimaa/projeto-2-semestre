@@ -1,88 +1,93 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import styles from './page.module.css';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { buscarDados } from "@/services/api";
+import styles from "./page.module.css";
 
-export default function ListarPedidos() {
-  const [pedidos, setPedidos] = useState(null);
-  const [clientes, setClientes] = useState([]);
+export default function ListarPedidosPage() {
+  const [pedidos, setPedidos] = useState([]);
   const [itens, setItens] = useState([]);
+  const [clientes, setClientes] = useState([]);
   const [produtos, setProdutos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-    const carregarDados = async () => {
+    async function carregarTudo() {
       try {
-        const [resPedidos, resClientes, resItens, resProdutos] = await Promise.all([
-          fetch('/api/pedidos'),
-          fetch('/api/clientes'),
-          fetch('/api/itens_pedido'),
-          fetch('/api/produtos'),
+        const [resPedidos, resItens, resClientes, resProdutos] = await Promise.all([
+          buscarDados("/pedidos"),
+          buscarDados("/itens_pedido"),
+          buscarDados("/clientes"),
+          buscarDados("/produtos"),
         ]);
 
-        if (resPedidos.ok) setPedidos(await resPedidos.json());
-        if (resClientes.ok) setClientes(await resClientes.json());
-        if (resItens.ok) setItens(await resItens.json());
-        if (resProdutos.ok) setProdutos(await resProdutos.json());
-      } catch (e) {
-        console.error('Erro ao buscar pedidos:', e.message);
+        setPedidos(Array.isArray(resPedidos) ? resPedidos : resPedidos.data || []);
+        setItens(Array.isArray(resItens) ? resItens : resItens.data || []);
+        setClientes(Array.isArray(resClientes) ? resClientes : resClientes.data || []);
+        setProdutos(Array.isArray(resProdutos) ? resProdutos : resProdutos.data || []);
+      } catch {
+        setErro("Não foi possível carregar os pedidos.");
+      } finally {
+        setCarregando(false);
       }
-    };
-    carregarDados();
+    }
+
+    carregarTudo();
   }, []);
 
-  const getNomeCliente = (id) => {
+  function obterNomeCliente(id) {
     const cliente = clientes.find((c) => c.id === id);
-    return cliente ? cliente.nome : `Cliente #${id}`;
-  };
+    return cliente ? cliente.nome || cliente.name : `Cliente #${id}`;
+  }
 
-  const getNomeProduto = (id) => {
+  function obterNomeProduto(id) {
     const produto = produtos.find((p) => p.id === id);
-    return produto ? produto.nome : `Produto #${id}`;
-  };
+    return produto ? produto.nome || produto.name : `Produto #${id}`;
+  }
 
   return (
     <div>
-      <div className={styles.topo}>
-        <h1>Pedidos Cadastrados</h1>
-        <Link href="/pedidos/novo" className="btn">+ Novo Pedido</Link>
+      <div className={styles.cabecalhoPagina}>
+        <h1 className={styles.titulo}>Pedidos Cadastrados</h1>
+        <Link href="/pedidos/novo" className={styles.botaoNovo}>
+          Novo Pedido
+        </Link>
       </div>
 
-      {pedidos === null ? (
-        <p>Carregando pedidos...</p>
-      ) : pedidos.length === 0 ? (
-        <div className={styles.card}>Nenhum pedido encontrado.</div>
-      ) : (
-        pedidos.map((pedido) => {
-          const itensDoPedido = itens.filter((item) => item.pedido_id === pedido.id);
+      {carregando && <p>Carregando pedidos...</p>}
+      {erro && <p className={styles.erro}>{erro}</p>}
+
+      <div className={styles.grade}>
+        {pedidos.map((pedido) => {
+          const itensDestePedido = itens.filter(
+            (i) => (i.pedido_id || i.pedidoId) === pedido.id
+          );
 
           return (
             <div key={pedido.id} className={styles.card}>
-              <h2>Pedido #{pedido.id}</h2>
-              <p><strong>Cliente:</strong> {getNomeCliente(pedido.cliente_id)}</p>
-              {pedido.status && <p><strong>Status:</strong> {pedido.status}</p>}
-              {pedido.data_pedido && (
-                <p><strong>Data:</strong> {new Date(pedido.data_pedido).toLocaleDateString('pt-BR')}</p>
-              )}
+              <span className={styles.etiqueta}>Pedido #{pedido.id}</span>
+              <h2>{obterNomeCliente(pedido.cliente_id || pedido.clienteId)}</h2>
 
-              <div className={styles.listaItens}>
-                <strong>Itens do Pedido:</strong>
-                {itensDoPedido.length === 0 ? (
-                  <p className={styles.vazio}>Sem itens vinculados.</p>
-                ) : (
-                  <ul>
-                    {itensDoPedido.map((item) => (
-                      <li key={item.id}>
-                        {getNomeProduto(item.produto_id)} — Quantidade: {item.quantidade}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <h4 className={styles.tituloItens}>Itens do Pedido</h4>
+
+              {itensDestePedido.length > 0 ? (
+                <ul className={styles.listaItens}>
+                  {itensDestePedido.map((item, idx) => (
+                    <li key={item.id || idx} className={styles.itemLinha}>
+                      <span>{obterNomeProduto(item.produto_id || item.produtoId)}</span>
+                      <strong>{item.quantidade} un.</strong>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={styles.semItens}>Nenhum item vinculado.</p>
+              )}
             </div>
           );
-        })
-      )}
+        })}
+      </div>
     </div>
   );
 }

@@ -1,43 +1,48 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import styles from './page.module.css';
+import { useEffect, useState } from "react";
+import styles from "./page.module.css";
 
-export default function Categorias() {
-  const [categorias, setCategorias] = useState(null);
+export default function CategoriasPage() {
+  const [categorias, setCategorias] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-    const fetchCategorias = async () => {
+    async function carregarCategorias() {
       try {
-        const response = await fetch('https://ifro.edu.br');
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar Categorias: ${response.statusText}`);
+        const resposta = await fetch("https://ifro.edu.br");
+        if (!resposta.ok) {
+          throw new Error("Erro ao buscar categorias");
         }
-        const data = await response.json();
-        setCategorias(data);
+        const dados = await resposta.json();
+        setCategorias(Array.isArray(dados) ? dados : dados.data || []);
       } catch (e) {
-        console.error(e.message);
+        console.log(e.message);
+        setErro("Não foi possível carregar as categorias.");
+      } finally {
+        setCarregando(false);
       }
-    };
-    fetchCategorias();
+    }
+
+    carregarCategorias();
   }, []);
 
   return (
     <div>
       <h1 className={styles.titulo}>Categorias</h1>
 
-      {categorias === null ? (
-        <p>Carregando categorias...</p>
-      ) : (
-        <div className={styles.grid}>
-          {categorias.map((cat) => (
-            <div key={cat.id} className={styles.card}>
-              <h2>{cat.nome}</h2>
-              <p>ID: #{cat.id}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      {carregando && <p>Carregando categorias...</p>}
+      {erro && <p className={styles.erro}>{erro}</p>}
+
+      <div className={styles.grade}>
+        {categorias.map((cat, index) => (
+          <div key={cat.id || index} className={styles.card}>
+            <span className={styles.etiqueta}>Categoria #{cat.id ?? index + 1}</span>
+            <h2>{cat.nome || cat.descricao}</h2>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

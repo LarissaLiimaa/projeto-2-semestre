@@ -13,7 +13,7 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.navContainer}>
         <Link href="/" className={styles.logo} onClick={fecharMenu}>
-          Estoque Store
+          Lima
         </Link>
 
         <button

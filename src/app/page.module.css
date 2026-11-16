@@ -1,57 +1,82 @@
-.banner {
-  background: #fff;
-  border: 1px solid #ddd;
+.cartaoPrincipal {
+  background-color: #ffffff;
+  border: 1px solid #bbf7d0;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
 
-.banner h1 {
-  font-size: 1.6rem;
-  color: #1e293b;
+.etiqueta {
+  display: inline-block;
+  background-color: #dcfce7;
+  color: #166534;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.titulo {
+  font-size: 1.8rem;
+  color: #14532d;
   margin-bottom: 8px;
 }
 
-.duplaTitulo {
-  font-size: 1.15rem;
-  color: #334155;
-  margin-top: 16px;
-  margin-bottom: 8px;
+.descricao {
+  color: #475569;
+  margin-bottom: 18px;
 }
 
-.listaDupla {
+.caixaDupla {
+  background-color: #f0fdf4;
+  border-left: 4px solid #15803d;
+  padding: 14px 18px;
+}
+
+.caixaDupla h3 {
+  font-size: 0.95rem;
+  color: #14532d;
+  margin-bottom: 6px;
+}
+
+.listaNomes {
   margin-left: 20px;
+  color: #334155;
 }
 
-.gridAtalhos {
+.gradeAtalhos {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
-.cardAtalho {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+@media (min-width: 769px) {
+  .gradeAtalhos {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-.cardAtalho h2 {
-  font-size: 1.2rem;
-  color: #1e293b;
+.atalho {
+  background-color: #ffffff;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+
+.atalho:hover {
+  border-color: #15803d;
+}
+
+.atalho h3 {
+  color: #15803d;
   margin-bottom: 8px;
 }
 
-.cardAtalho p {
-  margin-bottom: 16px;
+.atalho p {
   color: #475569;
-}
-
-@media (max-width: 768px) {
-  .gridAtalhos {
-    grid-template-columns: 1fr;
-  }
+  font-size: 0.92rem;
 }

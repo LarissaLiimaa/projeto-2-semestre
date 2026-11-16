@@ -1,47 +1,54 @@
 .titulo {
-  font-size: 1.6rem;
-  color: #1e293b;
-  margin-bottom: 16px;
+  font-size: 1.75rem;
+  color: #14532d;
+  margin-bottom: 20px;
 }
 
-.grid {
+.grade {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
+@media (min-width: 769px) {
+  .grade {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 .card {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 18px;
+  background-color: #ffffff;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 20px;
 }
 
 .card h2 {
+  color: #14532d;
   font-size: 1.15rem;
-  color: #1e293b;
-  margin-bottom: 10px;
 }
 
-.info {
-  font-size: 0.95rem;
-  color: #334155;
-  margin-bottom: 4px;
-}
-
-.estoque {
+.etiqueta {
   display: inline-block;
-  margin-top: 8px;
-  background-color: #e2e8f0;
-  color: #1e293b;
+  background-color: #dcfce7;
+  color: #166534;
+  font-size: 0.75rem;
+  font-weight: bold;
   padding: 4px 10px;
   border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: bold;
+  margin-bottom: 8px;
 }
 
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
+.detalhe {
+  margin-top: 8px;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.erro {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-left: 4px solid #dc2626;
+  padding: 14px;
+  margin-bottom: 16px;
 }

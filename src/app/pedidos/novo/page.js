@@ -1,186 +1,164 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { buscarDados, enviarDados } from "@/services/api";
+import styles from "./page.module.css";
 
-export default function CriarPedido() {
+export default function CriarPedidoPage() {
   const router = useRouter();
+
   const [clientes, setClientes] = useState([]);
   const [produtos, setProdutos] = useState([]);
 
-  const [clienteSelecionado, setClienteSelecionado] = useState('');
-  const [produtoSelecionado, setProdutoSelecionado] = useState('');
+  const [clienteId, setClienteId] = useState("");
+  const [produtoId, setProdutoId] = useState("");
   const [quantidade, setQuantidade] = useState(1);
+
   const [carrinho, setCarrinho] = useState([]);
-  const [enviando, setEnviando] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-    const carregarOpcoes = async () => {
+    async function carregarOpcoes() {
       try {
         const [resClientes, resProdutos] = await Promise.all([
-          fetch('https://ifro.edu.br'),
-          fetch('https://ifro.edu.br'),
+          buscarDados("/clientes"),
+          buscarDados("/produtos"),
         ]);
-        if (resClientes.ok) setClientes(await resClientes.json());
-        if (resProdutos.ok) setProdutos(await resProdutos.json());
-      } catch (e) {
-        console.error('Erro ao carregar dados:', e.message);
+        setClientes(Array.isArray(resClientes) ? resClientes : resClientes.data || []);
+        setProdutos(Array.isArray(resProdutos) ? resProdutos : resProdutos.data || []);
+      } catch {
+        setErro("Não foi possível carregar clientes e produtos.");
       }
-    };
+    }
     carregarOpcoes();
   }, []);
 
-  const adicionarProduto = () => {
-    if (!produtoSelecionado || quantidade <= 0) return;
+  function adicionarItem() {
+    if (!produtoId || quantidade <= 0) return;
 
-    const prodObj = produtos.find((p) => String(p.id) === String(produtoSelecionado));
-    if (!prodObj) return;
+    const prodEncontrado = produtos.find((p) => String(p.id) === String(produtoId));
+    if (!prodEncontrado) return;
 
     setCarrinho([
       ...carrinho,
       {
-        produto_id: prodObj.id,
-        nome: prodObj.nome,
+        produto_id: prodEncontrado.id,
+        nome: prodEncontrado.nome || prodEncontrado.name,
         quantidade: Number(quantidade),
       },
     ]);
 
-    setProdutoSelecionado('');
+    setProdutoId("");
     setQuantidade(1);
-  };
+  }
 
-  const removerItem = (index) => {
-    setCarrinho(carrinho.filter((_, i) => i !== index));
-  };
+  function removerItem(indice) {
+    setCarrinho(carrinho.filter((_, i) => i !== indice));
+  }
 
-  const salvarPedido = async (e) => {
-    e.preventDefault();
-    if (!clienteSelecionado || carrinho.length === 0) {
-      alert('Selecione um cliente e adicione pelo menos um produto.');
+  async function finalizarPedido(evento) {
+    evento.preventDefault();
+
+    if (!clienteId || carrinho.length === 0) {
+      setErro("Selecione um cliente e adicione pelo menos um produto.");
       return;
     }
 
-    setEnviando(true);
+    setSalvando(true);
+    setErro("");
+
     try {
-      const resPedido = await fetch('https://ifro.edu.br', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cliente_id: Number(clienteSelecionado),
-        }),
+      const pedidoCriado = await enviarDados("/pedidos", {
+        cliente_id: Number(clienteId),
       });
 
-      if (!resPedido.ok) throw new Error('Falha ao criar pedido');
-      const novoPedido = await resPedido.json();
+      const idNovoPedido = pedidoCriado.id || pedidoCriado.data?.id;
 
       for (const item of carrinho) {
-        const resItem = await fetch('https://ifro.edu.br', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pedido_id: novoPedido.id,
-            produto_id: item.produto_id,
-            quantidade: item.quantidade,
-          }),
+        await enviarDados("/itens_pedido", {
+          pedido_id: idNovoPedido,
+          produto_id: Number(item.produto_id),
+          quantidade: item.quantidade,
         });
-        if (!resItem.ok) throw new Error('Falha ao adicionar item');
       }
 
-      alert('Pedido cadastrado com sucesso!');
-      router.push('/pedidos');
-    } catch (e) {
-      console.error('Erro ao salvar pedido:', e.message);
-      alert('Erro ao cadastrar pedido. Verifique o console (F12).');
+      router.push("/pedidos");
+    } catch {
+      setErro("Erro ao registrar o pedido.");
     } finally {
-      setEnviando(false);
+      setSalvando(false);
     }
-  };
+  }
 
   return (
-    <div>
+    <div className={styles.containerForm}>
       <h1 className={styles.titulo}>Criar Novo Pedido</h1>
 
-      <form onSubmit={salvarPedido} className={styles.formulario}>
-        <div className={styles.grupo}>
-          <label>Selecione o Cliente:</label>
-          <select
-            value={clienteSelecionado}
-            onChange={(e) => setClienteSelecionado(e.target.value)}
-            required
-          >
-            <option value="">-- Escolha um cliente --</option>
-            {clientes.map((cliente) => (
-              <option key={cliente.id} value={cliente.id}>
-                {cliente.nome}
+      {erro && <p className={styles.erro}>{erro}</p>}
+
+      <form onSubmit={finalizarPedido} className={styles.formulario}>
+        <div className={styles.campo}>
+          <label>Cliente</label>
+          <select value={clienteId} onChange={(e) => setClienteId(e.target.value)} required>
+            <option value="">Selecione um cliente</option>
+            {clientes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome || c.name}
               </option>
             ))}
           </select>
         </div>
 
-        <hr className={styles.divisor} />
-
-        <h2 className={styles.subtitulo}>Adicionar Produtos</h2>
-        <div className={styles.linhaProduto}>
-          <div className={styles.grupo}>
-            <label>Produto:</label>
-            <select
-              value={produtoSelecionado}
-              onChange={(e) => setProdutoSelecionado(e.target.value)}
-            >
-              <option value="">-- Escolha um produto --</option>
-              {produtos.map((produto) => (
-                <option key={produto.id} value={produto.id}>
-                  {produto.nome} — R$ {Number(produto.preco).toFixed(2)} (Estoque: {produto.quantidade_estoque})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.grupo}>
-            <label>Quantidade:</label>
-            <input
-              type="number"
-              min="1"
-              value={quantidade}
-              onChange={(e) => setQuantidade(e.target.value)}
-            />
-          </div>
+        <div className={styles.campo}>
+          <label>Produto</label>
+          <select value={produtoId} onChange={(e) => setProdutoId(e.target.value)}>
+            <option value="">Selecione um produto</option>
+            {produtos.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nome || p.name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <button type="button" onClick={adicionarProduto} className={styles.btnAdicionar}>
-          + Adicionar Item
-        </button>
-
-        <div className={styles.carrinhoBox}>
-          <h2 className={styles.subtitulo}>Itens Adicionados ({carrinho.length})</h2>
-          {carrinho.length === 0 ? (
-            <p>Nenhum produto adicionado ainda.</p>
-          ) : (
-            <ul className={styles.listaCarrinho}>
-              {carrinho.map((item, index) => (
-                <li key={index} className={styles.itemCarrinho}>
-                  <span>
-                    {item.nome} — <strong>Qtd: {item.quantidade}</strong>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removerItem(index)}
-                    className={styles.btnRemover}
-                  >
-                    Remover
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className={styles.acoesFinais}>
-          <button type="submit" className="btn" disabled={enviando}>
-            {enviando ? 'Salvando...' : 'Finalizar Pedido'}
+        <div className={styles.linhaAdicionar}>
+          <input
+            type="number"
+            min="1"
+            value={quantidade}
+            onChange={(e) => setQuantidade(e.target.value)}
+            className={styles.inputQuantidade}
+          />
+          <button type="button" onClick={adicionarItem} className={styles.botaoAdicionar}>
+            Adicionar
           </button>
         </div>
+
+        {carrinho.length > 0 && (
+          <div className={styles.caixaItens}>
+            <h4>Itens selecionados</h4>
+            {carrinho.map((item, idx) => (
+              <div key={idx} className={styles.itemLinha}>
+                <span>
+                  <strong>{item.quantidade}x</strong> {item.nome}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removerItem(idx)}
+                  className={styles.botaoRemover}
+                >
+                  Remover
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <button type="submit" disabled={salvando} className={styles.botaoSalvar}>
+          {salvando ? "Salvando..." : "Finalizar Pedido"}
+        </button>
       </form>
     </div>
   );
