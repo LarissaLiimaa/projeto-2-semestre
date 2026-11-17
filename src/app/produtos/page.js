@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { buscarDados } from "@/services/api";
 import styles from "./page.module.css";
 
 export default function ProdutosPage() {
@@ -14,18 +13,28 @@ export default function ProdutosPage() {
   useEffect(() => {
     async function carregar() {
       try {
-        const [listaProdutos, listaCategorias] = await Promise.all([
-          buscarDados("/produtos"),
-          buscarDados("/categorias"),
+        const [resProdutos, resCategorias] = await Promise.all([
+          fetch("https://ifro.edu.br"),
+          fetch("https://ifro.edu.br"),
         ]);
-        setProdutos(listaProdutos);
-        setCategorias(listaCategorias);
+
+        if (!resProdutos.ok || !resCategorias.ok) {
+          throw new Error("Não foi possível carregar os produtos.");
+        }
+
+        const listaProdutos = await resProdutos.json();
+        const listaCategorias = await resCategorias.json();
+
+        setProdutos(Array.isArray(listaProdutos) ? listaProdutos : listaProdutos.data || []);
+        setCategorias(Array.isArray(listaCategorias) ? listaCategorias : listaCategorias.data || []);
       } catch (e) {
-        setErro(e.message);
+        console.log(e.message);
+        setErro("Não foi possível carregar os produtos.");
       } finally {
         setCarregando(false);
       }
     }
+
     carregar();
   }, []);
 
@@ -51,7 +60,8 @@ export default function ProdutosPage() {
           width: "100%",
           padding: "10px",
           marginBottom: "20px",
-          border: "1px solid #bfa8ad",
+          border: "1px solid #86efac",
+          borderRadius: "6px",
           fontSize: "1rem",
         }}
       />

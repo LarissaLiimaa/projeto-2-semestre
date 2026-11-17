@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { buscarDados, enviarDados } from "@/services/api";
 import styles from "./page.module.css";
 
 export default function CriarPedidoPage() {
@@ -23,15 +22,25 @@ export default function CriarPedidoPage() {
     async function carregarOpcoes() {
       try {
         const [resClientes, resProdutos] = await Promise.all([
-          buscarDados("/clientes"),
-          buscarDados("/produtos"),
+          fetch("https://ifro.edu.br"),
+          fetch("https://ifro.edu.br"),
         ]);
-        setClientes(Array.isArray(resClientes) ? resClientes : resClientes.data || []);
-        setProdutos(Array.isArray(resProdutos) ? resProdutos : resProdutos.data || []);
-      } catch {
+
+        if (!resClientes.ok || !resProdutos.ok) {
+          throw new Error("Erro ao carregar clientes e produtos");
+        }
+
+        const dadosClientes = await resClientes.json();
+        const dadosProdutos = await resProdutos.json();
+
+        setClientes(Array.isArray(dadosClientes) ? dadosClientes : dadosClientes.data || []);
+        setProdutos(Array.isArray(dadosProdutos) ? dadosProdutos : dadosProdutos.data || []);
+      } catch (e) {
+        console.log(e.message);
         setErro("Não foi possível carregar clientes e produtos.");
       }
     }
+
     carregarOpcoes();
   }, []);
 
@@ -45,7 +54,7 @@ export default function CriarPedidoPage() {
       ...carrinho,
       {
         produto_id: prodEncontrado.id,
-        nome: prodEncontrado.nome || prodEncontrado.name,
+        nome: prodEncontrado.nome,
         quantidade: Number(quantidade),
       },
     ]);
@@ -70,22 +79,44 @@ export default function CriarPedidoPage() {
     setErro("");
 
     try {
-      const pedidoCriado = await enviarDados("/pedidos", {
-        cliente_id: Number(clienteId),
+      const resPedido = await fetch("https://ifro.edu.br", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cliente_id: Number(clienteId),
+        }),
       });
 
+      if (!resPedido.ok) {
+        throw new Error("Falha ao criar o pedido");
+      }
+
+      const pedidoCriado = await resPedido.json();
       const idNovoPedido = pedidoCriado.id || pedidoCriado.data?.id;
 
       for (const item of carrinho) {
-        await enviarDados("/itens_pedido", {
-          pedido_id: idNovoPedido,
-          produto_id: Number(item.produto_id),
-          quantidade: item.quantidade,
+        const resItem = await fetch("https://ifro.edu.br", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pedido_id: idNovoPedido,
+            produto_id: Number(item.produto_id),
+            quantidade: item.quantidade,
+          }),
         });
+
+        if (!resItem.ok) {
+          throw new Error("Falha ao registrar item do pedido");
+        }
       }
 
       router.push("/pedidos");
-    } catch {
+    } catch (e) {
+      console.log(e.message);
       setErro("Erro ao registrar o pedido.");
     } finally {
       setSalvando(false);
@@ -105,7 +136,7 @@ export default function CriarPedidoPage() {
             <option value="">Selecione um cliente</option>
             {clientes.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.nome || c.name}
+                {c.nome}
               </option>
             ))}
           </select>
@@ -117,7 +148,7 @@ export default function CriarPedidoPage() {
             <option value="">Selecione um produto</option>
             {produtos.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.nome || p.name}
+                {p.nome} — R$ {Number(p.preco).toFixed(2)} (Estoque: {p.quantidade_estoque})
               </option>
             ))}
           </select>

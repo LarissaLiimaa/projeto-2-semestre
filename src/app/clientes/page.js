@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { buscarDados } from "@/services/api";
 import styles from "./page.module.css";
 
 export default function ClientesPage() {
@@ -10,10 +9,23 @@ export default function ClientesPage() {
   const [erro, setErro] = useState("");
 
   useEffect(() => {
-    buscarDados("/clientes")
-      .then((dados) => setClientes(Array.isArray(dados) ? dados : dados.data || []))
-      .catch(() => setErro("Não foi possível carregar os clientes."))
-      .finally(() => setCarregando(false));
+    async function carregarClientes() {
+      try {
+        const resposta = await fetch("https://ifro.edu.br");
+        if (!resposta.ok) {
+          throw new Error("Erro ao buscar clientes");
+        }
+        const dados = await resposta.json();
+        setClientes(Array.isArray(dados) ? dados : dados.data || []);
+      } catch (e) {
+        console.log(e.message);
+        setErro("Não foi possível carregar os clientes.");
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    carregarClientes();
   }, []);
 
   return (
@@ -37,7 +49,7 @@ export default function ClientesPage() {
               {clientes.map((cli, index) => (
                 <tr key={cli.id || index}>
                   <td>#{cli.id ?? index + 1}</td>
-                  <td><strong>{cli.nome || cli.name}</strong></td>
+                  <td><strong>{cli.nome}</strong></td>
                   <td>{cli.email || cli.telefone || "Não informado"}</td>
                 </tr>
               ))}
